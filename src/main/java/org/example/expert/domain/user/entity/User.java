@@ -18,23 +18,26 @@ public class User extends Timestamped {
     @Column(unique = true)
     private String email;
     private String password;
+    private String nickname;//lv1-2. jwt에 닉네임 반환
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    public User(String email, String password, UserRole userRole) {
+    public User(String email, String password, UserRole userRole, String nickname) {//lv1-2. jwt에 닉네임 반환
         this.email = email;
         this.password = password;
         this.userRole = userRole;
+        this.nickname = nickname;
     }
 
-    private User(Long id, String email, UserRole userRole) {
+    private User(Long id, String email, UserRole userRole, String nickname) {//lv1-2. jwt에 닉네임 반환
         this.id = id;
         this.email = email;
         this.userRole = userRole;
+        this.nickname = nickname;
     }
 
     public static User fromAuthUser(AuthUser authUser) {
-        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserRole());
+        return new User(authUser.getId(), authUser.getEmail(), authUser.getUserRole(), authUser.getNickname());//lv1-2. jwt에 닉네임 반환
     }
 
     public void changePassword(String password) {
