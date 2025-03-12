@@ -15,9 +15,10 @@ public class User extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
     private String password;
+    @Column(nullable = false)//Lv1-2 Null값처리
     private String nickname;//lv1-2. jwt에 닉네임 반환
     @Enumerated(EnumType.STRING)
     private UserRole userRole;

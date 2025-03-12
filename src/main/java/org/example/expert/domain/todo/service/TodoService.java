@@ -17,6 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) //lv1-1. 문제 발생 원인
@@ -48,20 +51,41 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather, LocalDate startDate, LocalDate endDate) { // lv1-3
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+
+        Page<Todo> todos;
+
+        if (weather == null && startDateTime == null && endDateTime == null) {
+            todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        }
+
+        if (weather != null && startDateTime != null && endDateTime != null) {
+            todos = todoRepository.findByWeatherAndModifiedAtBetween(weather, startDateTime, endDateTime, pageable);
+        }
+
+        if (weather != null) {
+            todos = todoRepository.findAllByWeatherOrderByModifiedAtDesc(weather, pageable);
+        }
+
+        else {
+            todos = todoRepository.findAllByModifiedAtBetween(startDateTime, endDateTime, pageable);
+        }
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
                 todo.getTitle(),
                 todo.getContents(),
                 todo.getWeather(),
-                new UserResponse(todo.getUser().getId(), todo.getUser().getEmail(), todo.getUser().getNickname()),//lv1-2
+                new UserResponse(todo.getUser().getId(), todo.getUser().getEmail(), (todo.getUser().getNickname() != null) ? todo.getUser().getNickname() : "Guest"),//lv1-2, Null값 방어
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         ));
+
+
     }
 
     public TodoResponse getTodo(long todoId) {
