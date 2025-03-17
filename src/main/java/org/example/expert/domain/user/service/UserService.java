@@ -10,6 +10,8 @@ import org.example.expert.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,8 +26,10 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(long userId, UserChangePasswordRequest userChangePasswordRequest) {
+    public void changePassword(Principal principal, UserChangePasswordRequest userChangePasswordRequest) {
         validateNewPassword(userChangePasswordRequest);
+
+        Long userId = Long.valueOf(principal.getName()); //lv2-9
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidRequestException("User not found"));

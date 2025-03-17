@@ -11,12 +11,14 @@ import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
+import org.example.expert.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -27,10 +29,14 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
     private final WeatherClient weatherClient;
+    private final UserRepository userRepository;
 
     @Transactional //lv1-1. 작성 부분에 트랜잭셔널 추가
-    public TodoSaveResponse saveTodo(AuthUser authUser, TodoSaveRequest todoSaveRequest) {
-        User user = User.fromAuthUser(authUser);
+    public TodoSaveResponse saveTodo(Principal principal, TodoSaveRequest todoSaveRequest) {
+        //Lv2-9
+        Long userId = Long.valueOf(principal.getName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidRequestException("User not found"));
 
         String weather = weatherClient.getTodayWeather();
 

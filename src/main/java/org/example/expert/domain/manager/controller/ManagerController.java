@@ -11,6 +11,7 @@ import org.example.expert.domain.manager.service.ManagerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,11 +22,11 @@ public class ManagerController {
 
     @PostMapping("/todos/{todoId}/managers")
     public ResponseEntity<ManagerSaveResponse> saveManager(
-            @Auth AuthUser authUser,
+            Principal principal, //Lv2-9
             @PathVariable long todoId,
             @Valid @RequestBody ManagerSaveRequest managerSaveRequest
     ) {
-        return ResponseEntity.ok(managerService.saveManager(authUser, todoId, managerSaveRequest));
+        return ResponseEntity.ok(managerService.saveManager(principal, todoId, managerSaveRequest));
     }
 
     @GetMapping("/todos/{todoId}/managers")
@@ -35,10 +36,10 @@ public class ManagerController {
 
     @DeleteMapping("/todos/{todoId}/managers/{managerId}")
     public void deleteManager(
-            @Auth AuthUser authUser,
+            Principal principal, //Lv2-9
             @PathVariable long todoId,
             @PathVariable long managerId
     ) {
-        managerService.deleteManager(authUser, todoId, managerId);
+        managerService.deleteManager(principal, todoId, managerId);
     }
 }

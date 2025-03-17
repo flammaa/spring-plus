@@ -63,4 +63,11 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    //lv2-9
+    public Long extractUserId(String token) {
+        Claims claims = extractClaims(token); //jwt 파싱
+        String subject = claims.getSubject();
+        return Long.parseLong(subject); //long -> userId로 변환
+    }
 }

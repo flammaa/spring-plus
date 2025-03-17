@@ -11,6 +11,7 @@ import org.example.expert.domain.common.dto.AuthUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,11 +22,11 @@ public class CommentController {
 
     @PostMapping("/todos/{todoId}/comments")
     public ResponseEntity<CommentSaveResponse> saveComment(
-            @Auth AuthUser authUser,
+            Principal principal, // lv.2-9
             @PathVariable long todoId,
             @Valid @RequestBody CommentSaveRequest commentSaveRequest
     ) {
-        return ResponseEntity.ok(commentService.saveComment(authUser, todoId, commentSaveRequest));
+        return ResponseEntity.ok(commentService.saveComment(principal, todoId, commentSaveRequest));
     }
 
     @GetMapping("/todos/{todoId}/comments")

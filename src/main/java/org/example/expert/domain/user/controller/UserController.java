@@ -9,6 +9,8 @@ import org.example.expert.domain.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -21,7 +23,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public void changePassword(@Auth AuthUser authUser, @RequestBody UserChangePasswordRequest userChangePasswordRequest) {
-        userService.changePassword(authUser.getId(), userChangePasswordRequest);
+    public void changePassword(Principal principal, @RequestBody UserChangePasswordRequest userChangePasswordRequest) {
+        userService.changePassword(principal, userChangePasswordRequest);
     }
 }

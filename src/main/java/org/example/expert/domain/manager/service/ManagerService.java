@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +31,12 @@ public class ManagerService {
     private final TodoRepository todoRepository;
 
     @Transactional
-    public ManagerSaveResponse saveManager(AuthUser authUser, long todoId, ManagerSaveRequest managerSaveRequest) {
+    public ManagerSaveResponse saveManager(Principal principal, long todoId, ManagerSaveRequest managerSaveRequest) {
         // 일정을 만든 유저
-        User user = User.fromAuthUser(authUser);
+        Long userId = Long.valueOf(principal.getName()); // 회원 id 가공 Lv2-9
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidRequestException("User not found"));
+//        User user = User.fromAuthUser(authUser);
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 
@@ -74,9 +78,11 @@ public class ManagerService {
     }
 
     @Transactional
-    public void deleteManager(AuthUser authUser, long todoId, long managerId) {
-        User user = User.fromAuthUser(authUser);
-
+    public void deleteManager(Principal principal, long todoId, long managerId) {
+//        User user = User.fromAuthUser(authUser);
+        Long userId = Long.valueOf(principal.getName()); //lv2-9
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidRequestException("User not found"));
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 

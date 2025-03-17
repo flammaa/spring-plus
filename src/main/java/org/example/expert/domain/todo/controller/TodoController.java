@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,10 +25,10 @@ public class TodoController {
 
     @PostMapping("/todos")
     public ResponseEntity<TodoSaveResponse> saveTodo(
-            @Auth AuthUser authUser,
+            Principal principal, //lv2-9
             @Valid @RequestBody TodoSaveRequest todoSaveRequest
     ) {
-        return ResponseEntity.ok(todoService.saveTodo(authUser, todoSaveRequest));
+        return ResponseEntity.ok(todoService.saveTodo(principal, todoSaveRequest));
     }
 
     @GetMapping("/todos")
