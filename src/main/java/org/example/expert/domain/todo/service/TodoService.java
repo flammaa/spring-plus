@@ -7,8 +7,10 @@ import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSearchResponse;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
+import org.example.expert.domain.todo.repository.TodoRepositoryCustom;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.repository.UserRepository;
@@ -30,6 +32,7 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final WeatherClient weatherClient;
     private final UserRepository userRepository;
+    private final TodoRepositoryCustom todoRepositoryCustom;
 
     @Transactional //lv1-1. 작성 부분에 트랜잭셔널 추가
     public TodoSaveResponse saveTodo(Principal principal, TodoSaveRequest todoSaveRequest) {
@@ -109,5 +112,33 @@ public class TodoService {
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         );
+    }
+
+    //lv3-10
+    public Page<TodoSearchResponse> searchTodos(int page, int size, String title, String start, String end, String nickname) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        if(title == null){
+            throw new InvalidRequestException("제목을 입력해주세요.");
+        }
+
+        if(nickname == null){
+            throw new InvalidRequestException("닉네임을 입력해주세요.");
+        }
+
+        if(start == null){
+            throw new InvalidRequestException("시작 범위날짜를 입력해주세요");
+        }
+
+        if(end == null){
+            throw new InvalidRequestException("종료 범위날짜를 입력해주세요");
+        }
+
+        Page<TodoSearchResponse> todos = todoRepositoryCustom.findTodoWithCommentAndManagerCounts(pageable, title, start, end, nickname);
+        return todos.map(todo -> new TodoSearchResponse(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getMangerCount(),
+                todo.getCommentCount()
+        ));
     }
 }
