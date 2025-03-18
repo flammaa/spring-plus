@@ -71,7 +71,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom { //2-8
                         ))
                         .and(todo.createdAt.between(startDateTime, endDateTime))
                 )
-                .groupBy(todo.id, todo.title);
+                .groupBy(todo.id, todo.title)
+                .orderBy(todo.createdAt.desc());//lv3-10 수정
 
         // 페이징 처리
         long total = query.fetchCount(); // 전체 건수
