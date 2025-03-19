@@ -3,6 +3,7 @@ package org.example.expert.domain.manager.service;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.log.service.LogService;
 import org.example.expert.domain.manager.dto.request.ManagerSaveRequest;
 import org.example.expert.domain.manager.dto.response.ManagerResponse;
 import org.example.expert.domain.manager.dto.response.ManagerSaveResponse;
@@ -29,13 +30,19 @@ public class ManagerService {
     private final ManagerRepository managerRepository;
     private final UserRepository userRepository;
     private final TodoRepository todoRepository;
+    private final LogService logService;
 
     @Transactional
     public ManagerSaveResponse saveManager(Principal principal, long todoId, ManagerSaveRequest managerSaveRequest) {
+
         // 일정을 만든 유저
         Long userId = Long.valueOf(principal.getName()); // 회원 id 가공 Lv2-9
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidRequestException("User not found"));
+
+        //Lv3-11
+        logService.logRequest("saveMangager", "Logging Mannager", user);
+
 //        User user = User.fromAuthUser(authUser);
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
